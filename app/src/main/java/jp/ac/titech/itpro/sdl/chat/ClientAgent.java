@@ -49,9 +49,10 @@ class ClientAgent extends Agent {
     }
 
     private static class ClientTask extends AsyncTask<BluetoothDevice, Void, BluetoothSocket> {
-        private WeakReference<ClientAgent> ref;
+        private final WeakReference<ClientAgent> ref;
 
         ClientTask(ClientAgent client) {
+            super();
             ref = new WeakReference<>(client);
         }
 
