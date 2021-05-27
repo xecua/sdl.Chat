@@ -8,11 +8,13 @@ public class ChatMessage implements Parcelable {
     final static String FIELD_TIME = "time";
     final static String FIELD_CONTENT = "content";
     final static String FIELD_SENDER = "sender";
+    final static String FIELD_SOUND = "sound";
 
     public final int seq;
     public final long time;
     public final String content;
     public final String sender;
+    public boolean sound = false;
 
     public ChatMessage(int seq, long time, String content, String sender) {
         this.seq = seq;
@@ -21,11 +23,17 @@ public class ChatMessage implements Parcelable {
         this.sender = sender;
     }
 
+    public ChatMessage(int seq, long time, String content, String sender, boolean sound) {
+        this(seq, time, content, sender);
+        this.sound = sound;
+    }
+
     private ChatMessage(Parcel in) {
         seq = in.readInt();
         time = in.readLong();
         content = in.readString();
         sender = in.readString();
+        sound = in.readInt() == 1;
     }
 
     @SuppressWarnings("NullableProblems")
@@ -45,6 +53,7 @@ public class ChatMessage implements Parcelable {
         dest.writeLong(time);
         dest.writeString(content);
         dest.writeString(sender);
+        dest.writeInt(sound ? 1 : 0);
     }
 
     public static final Creator<ChatMessage> CREATOR = new Creator<ChatMessage>() {

@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView logview;
     private EditText input;
     private Button button;
+    private Button soundButton;
 
     private final ArrayList<ChatMessage> chatLog = new ArrayList<>();
     private ArrayAdapter<ChatMessage> chatLogAdapter;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         progress = findViewById(R.id.main_progress);
         input = findViewById(R.id.main_input);
         button = findViewById(R.id.main_button);
+        soundButton = findViewById(R.id.sound_button);
 
         chatLogAdapter = new ArrayAdapter<ChatMessage>(this, 0, chatLog) {
             @Override
@@ -237,6 +239,15 @@ public class MainActivity extends AppCompatActivity {
         input.getEditableText().clear();
     }
 
+    public void onClickSoundButton(View v) {
+        Log.d(TAG, "onClickSoundButton");
+
+        messageSeq++;
+        long time = System.currentTimeMillis();
+        ChatMessage message = new ChatMessage(messageSeq, time, "", adapter.getName(), true);
+        agent.send(message);
+    }
+
     public void setState(State state) {
         setState(state, null);
     }
@@ -245,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
         this.state = state;
         input.setEnabled(state == State.Connected);
         button.setEnabled(state == State.Connected);
+        soundButton.setEnabled(state == State.Connected);
         switch (state) {
         case Initializing:
         case Disconnected:
@@ -269,9 +281,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showMessage(ChatMessage message) {
-        chatLogAdapter.add(message);
-        chatLogAdapter.notifyDataSetChanged();
-        logview.smoothScrollToPosition(chatLogAdapter.getCount());
+        if (message.sound) {
+            soundPlayer.playConnected();
+        } else {
+            chatLogAdapter.add(message);
+            chatLogAdapter.notifyDataSetChanged();
+            logview.smoothScrollToPosition(chatLogAdapter.getCount());
+        }
     }
 
     private void disconnect() {
